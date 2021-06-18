@@ -3,7 +3,11 @@ python: "3.8"
 services:
   - docker
 
-before_script: pip install docker-compose
+before_script: 
+  - sudo service postgresql stop
+  # wait for postgresql to shutdown
+  - while sudo lsof -Pi :5432 -sTCP:LISTEN -t; do sleep 1; done
+  - pip install docker-compose
 
 script:
   - docker-compose run app python manage.py test && flake8
